@@ -1,0 +1,38 @@
+server:
+  port: 8090
+
+
+spring:
+  datasource:
+#    url: jdbc:mysql://localhost:3306/wms_web3?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC&useSSL=false
+    url: jdbc:p6spy:mysql://localhost:3306/wms_web3?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC&useSSL=false
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: com.p6spy.engine.spy.P6SpyDriver
+    username: root
+    password: 12312300a
+#    p6spy:
+#      # 全部可用参数参照该类：com.p6spy.engine.spy.appender.CustomLineFormat
+#      log-format: "\ntime:%(executionTime) || sql:%(sql)\n"
+#      # 自定义日志类的作用仅仅是改变了打印的颜色，如果不需要可以不加
+#      logging: custom
+#      custom-appender-class: com.example.testinit.config.StdoutLogger
+
+# 日志配置
+logging:
+  level:
+    root: info
+    com:
+      mu:
+        wms: debug
+  file:
+    name: D:/1Learn/LOG/spring_vue3_wms.log
+
+# mybatis-plus配置
+mybatis-plus:
+#  configuration:
+#    log-impl:
+#      org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
