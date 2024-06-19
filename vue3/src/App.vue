@@ -11,10 +11,9 @@
 
 <style scoped lang="css">
   .box {
-    background: #000;
-
     width: 800px;
     height: 500px;
+    background: #000;
 
     h1 {
       color: #fff;
