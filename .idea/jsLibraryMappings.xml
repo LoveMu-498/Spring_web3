@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="JavaScriptLibraryMappings">
-    <file url="file://$PROJECT_DIR$" libraries="{Node.js Core, Spring_web3/node_modules}" />
-    <file url="file://$PROJECT_DIR$/vue3" libraries="{Spring_web3/vue3/node_modules}" />
+    <file url="file://$PROJECT_DIR$" libraries="{Node.js Core}" />
     <file url="file://$PROJECT_DIR$/wms" libraries="{Node.js Core}" />
-    <file url="PROJECT" libraries="{Spring_web3/node_modules, Spring_web3/vue3/node_modules}" />
+    <file url="PROJECT" libraries="{Spring_web3/vue3/node_modules}" />
     <includedPredefinedLibrary name="HTTP Pre-Request and Response Handler" />
   </component>
 </project>

@@ -1,4 +1,10 @@
+/.husky/*
+/.vscode/*
+/bin
 /node_modules/*
-/dist/*
+/docs/*
 /html/*
+/dist/*
 /public/*
+/scripts/*
+files

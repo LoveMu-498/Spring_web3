@@ -1,21 +1,24 @@
-<script setup lang="ts">
-const str = 'I Love China';
-</script>
-
 <template>
   <div class="box">
-    <h1>App</h1>
-    {{ str }}
+    <h1>{{ a }}</h1>
   </div>
+  {{ a }}
 </template>
 
-<style scoped lang="scss">
-.box {
-  width: 600px;
-  height: 400px;
-  background: #000;
-  h1 {
-    color: #fff;
+<script setup lang="ts">
+  const a = '我爱你中国';
+</script>
+
+<style scoped lang="css">
+  .box {
+    background: #000;
+
+    width: 800px;
+    height: 500px;
+
+    h1 {
+      color: #fff;
+      text-align: center;
+    }
   }
-}
 </style>
