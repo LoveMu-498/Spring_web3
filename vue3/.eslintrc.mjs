@@ -1,16 +1,18 @@
 const process = require(".eslintrc.mjs");
 module.exports = {
+    root: true,
     env: {
         browser: true,
-        es2021: true,
+        es2024: true,
         node: true,
         jest: true,
     },
     /* 指定如何解析语法 */
     parser: 'vue-eslint-parser',
+    // parser: 'babel-eslint',
     /* 优先级低于 parse 的语法解析配置 */
     parserOptions: {
-        ecmaVersion: 12,
+        ecmaVersion: 'latest',
         sourceType: 'module',
         parser: '@typescript-eslint/parser',
         jsxPragma: 'React',
@@ -29,7 +31,7 @@ module.exports = {
         'vue',
         '@typescript-eslint'
     ],
-    /*    
+    /*
     * 'off' 或 0   ==> 关闭规则
     * 'warn' 或 1  ==> 打开的规则作为警告(不影响代码运行)
     * 'error' 或 2 ==> 规则作为一个错误(代码不能执行, 界面报错)
@@ -48,7 +50,7 @@ module.exports = {
         '@typescript-eslint/no-explicit-any': 'off',   // 禁止使用 any 类型
         '@typescript-eslint/no-non-null-assertion': 'off',
         '@typescript-eslint/no-namespace': 'off',   // 禁止使用自定义 TypeScript 模块的命名空间.
-        '@typescript-eslint/semi': 'off',
+        '@typescript-eslint/semi': 'warn',
 
         // eslint-plugin-vue (https://eslint.vuejs.org/rules/)
         'vue/multi-word-component-names': 'off',    // 要求组件名始终为 "-" 链接的单词
