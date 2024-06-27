@@ -1,23 +1,28 @@
 <template>
-  <div class="box">
-    <h1>{{ a }}</h1>
+  <div>
+    <h1>SVG测试</h1>
   </div>
-  {{ a }}
 </template>
 
 <script setup lang="ts">
-  const a = '我爱你中国';
+  import { onMounted } from 'vue';
+  import request from '../utils/request.ts';
+
+  onMounted(() => {
+    request({
+      url: '/user/login',
+      method: 'post',
+      data: {
+        username: 'admin',
+        password: 'admin',
+      },
+    });
+  });
 </script>
-
-<style scoped lang="css">
-  .box {
-    width: 800px;
-    height: 500px;
-    background: #000;
-
+<style scoped lang="scss">
+  div {
     h1 {
-      color: #fff;
-      text-align: center;
+      color: red;
     }
   }
 </style>

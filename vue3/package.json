@@ -19,11 +19,15 @@
     "lint-staged": "lint-staged",
     "cm": "git-cz",
     "commitlint": "commitlint -e -V",
-    "prepare": "husky && husky install"
+    "prepare": "husky",
+    "build:test": "vue-tsc && vite build --mode test",
+    "build:pro": "vue-tsc && vite build --mode production"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
+    "axios": "^1.7.2",
     "element-plus": "^2.7.5",
+    "eslint-import-resolver-alias": "^1.1.2",
     "vue": "^3.4.21"
   },
   "devDependencies": {
@@ -39,9 +43,12 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-prettier": "^5.1.3",
     "eslint-plugin-vue": "^9.26.0",
-    "husky": "^8.0.0",
+    "husky": "^9.0.11",
     "lint-staged": "^15.2.7",
+    "mockjs": "^1.1.0",
     "prettier": "^3.3.2",
+    "sass": "^1.77.6",
+    "sass-loader": "^14.2.1",
     "stylelint": "^16.6.1",
     "stylelint-config-recess-order": "^5.0.1",
     "stylelint-config-recommended-scss": "^14.0.0",
@@ -51,6 +58,8 @@
     "typescript": "^5.2.2",
     "vite": "^5.2.0",
     "vite-plugin-eslint": "^1.8.1",
+    "vite-plugin-mock": "^3.0.2",
+    "vite-plugin-svg-icons": "^2.0.1",
     "vue-tsc": "^2.0.6"
   }
 }

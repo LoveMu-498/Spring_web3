@@ -1,9 +1,23 @@
 module.exports = {
+  settings: {
+    'import/resolver': {
+      'node': {
+        extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
+      },
+      alias: {
+        map: [
+          ['@', "./src"]
+        ],
+        // 告诉resolver-alias有哪些后缀的文件要解析
+        extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
+      },
+    },
+  },
   root: true,
   env: {
     browser: true,
     node: true,
-    es6: true,
+    es2022: true,
   },
   // 指定如何解析语法
   parser: 'vue-eslint-parser',
@@ -24,13 +38,18 @@ module.exports = {
     'plugin:prettier/recommended',
     // './.eslintrc-auto-import.json',
     'eslint:recommended',
-    // 'plugin:vue/vue3-essential',
+    'plugin:vue/vue3-essential',
     'plugin:@typescript-eslint/recommended',
-    // 'plugin:prettier/recommended',
+    'plugin:prettier/recommended',
+    // @typescript-eslint/parser 和 eslint-import-resolver-typescript
+    'plugin:import/recommended',
+    'plugin:import/typescript',
   ],
   plugins: [
     'vue',
     '@typescript-eslint',
+    // @typescript-eslint/parser 和 eslint-import-resolver-typescript
+    'eslint-plugin-import',
   ],
   /**
    * "off" 或 0  ==>  关闭规则
@@ -61,6 +80,6 @@ module.exports = {
     'vue/script-setup-uses-vars': 'error',  // 防止 <script setup>使用的变量 <template>被标记为未使用
     'vue/no-mutating-props': 'off', // 不允许组建 prop 的改变
     'vue/attribute-hyphenation': 'off', // 对模版中的自定义组件强制执行属性命名样式
-  },
+  }
 };
 
