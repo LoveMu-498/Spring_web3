@@ -10,7 +10,8 @@ import 'virtual:svg-icons-register';
 // eslint-disable-next-line import/extensions
 import components from '@/components';
 import '@/styles/index.scss';
-// eslint-disable-next-line import/no-extraneous-dependencies
+import router from '@/router/index.ts';
+import pinia from '@/store/index.ts';
 
 const app = createApp(App);
 
@@ -23,5 +24,7 @@ app.use(ElementPlus, {
 // console.log('global', gloalComponent);
 app.use(components);
 // app.component('SvgIcon', SvgIcon);
-
+// 注册模版路由
+app.use(router);
+app.use(pinia);
 app.mount('#app');
