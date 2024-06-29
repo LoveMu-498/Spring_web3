@@ -19,7 +19,7 @@ request.interceptors.response.use(
   },
   error => {
     // 处理网络错误
-    let msg = '';
+    let msg;
     const { status } = error.response;
     switch (status) {
       case 401:

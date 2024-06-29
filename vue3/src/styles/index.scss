@@ -1,1 +1,20 @@
 @import './reset';
+
+// 滚动条外滚设置
+::-webkit-scrollbar {
+  width: 10px;
+  -webkit-appearance: none;
+}
+::-webkit-scrollbar-track {
+  background: $base-menu-background;
+}
+::-webkit-scrollbar-thumb{
+  width: 10px;
+  background-color: yellowgreen;
+  border-radius: 10px;
+  transition: all 1s;
+  background-clip: padding-box;
+  :hover {
+    background-color: #1c1d1f !important;
+  }
+}

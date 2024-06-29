@@ -3,12 +3,16 @@ import { defineStore } from 'pinia';
 import { reqLogin } from '@/api/user/index.ts';
 import type { loginForm, loginResponseData } from '@/api/user/type.ts';
 import { GET_TOKEN, SET_TOKEN } from '@/utils/token.ts';
+import { constantRoute } from '@/router/routes.ts';
 import type { UserState } from './types/type.ts';
+// 引入路由
 
 const useUserStore = defineStore('User', {
   state: (): UserState => {
     return {
       token: GET_TOKEN(),
+      // 仓库存储生成菜单需要数组(路由)
+      menuRoutes: constantRoute,
     };
   },
   // 异步 | 逻辑

@@ -5,6 +5,8 @@ import vue from '@vitejs/plugin-vue';
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons';
 import path from 'path';
 import { viteMockServe } from 'vite-plugin-mock';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import VueSetupExtend from 'vite-plugin-vue-setup-extend';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
@@ -22,6 +24,7 @@ export default defineConfig(({ command }) => {
         // enable: true,
         logger: true,
       }),
+      VueSetupExtend(),
     ],
     resolve: {
       alias: {
