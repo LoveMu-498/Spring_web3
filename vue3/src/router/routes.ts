@@ -21,9 +21,9 @@ export const constantRoute = [
     name: 'layout',
     meta: {
       // 菜单标题
-      title: 'layout',
-      hidden: false,
-      icon: 'Avatar',
+      title: '',
+      hidden: true,
+      icon: 'HomeFilled',
     },
     redirect: '/home',
     children: [
@@ -73,6 +73,7 @@ export const constantRoute = [
       hidden: false,
       icon: 'Lock',
     },
+    redirect: '/acl/user',
     children: [
       {
         path: '/acl/user',
@@ -118,6 +119,7 @@ export const constantRoute = [
       hidden: false,
       icon: 'Goods',
     },
+    redirect: '/product/trademark',
     children: [
       {
         path: '/product/trademark',

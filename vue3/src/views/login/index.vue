@@ -3,7 +3,7 @@
   import { reactive, ref } from 'vue';
   import useUserStore from '@/store/modules/user.ts';
   // eslint-disable-next-line import/no-extraneous-dependencies
-  import { useRouter } from 'vue-router';
+  import { useRoute, useRouter } from 'vue-router';
   import { ElNotification, FormRules } from 'element-plus';
   import { getTime } from '@/utils/time.ts';
   import type { loginForm } from '@/api/user/type.ts';
@@ -12,6 +12,7 @@
   const loginForms = ref();
   // 获取路由器
   const $router = useRouter();
+  const $route = useRoute();
   const useStore = useUserStore();
   const loading = ref(false);
   const loginFormData = reactive({
@@ -50,7 +51,8 @@
       await loginForms.value.validate();
       loading.value = true;
       await useStore.userLogin(loginFormData);
-      $router.push({ path: '/' });
+      const path = String($route.query.redirect) || '/';
+      await $router.push({ path });
       ElNotification({
         type: 'success',
         title: `${getTime()}好`,
