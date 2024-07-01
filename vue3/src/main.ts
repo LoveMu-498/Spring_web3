@@ -12,6 +12,8 @@ import components from '@/components';
 import '@/styles/index.scss';
 import router from '@/router/index.ts';
 import pinia from '@/store/index.ts';
+import '@/permisstion.ts';
+// 引入路由鉴权文件
 
 const app = createApp(App);
 

@@ -35,8 +35,9 @@ const useUserStore = defineStore('User', {
       if (result.code === 200) {
         this.username = result.data.checkUser.username;
         this.avatar = result.data.checkUser.avatar;
-      } else {
+        return 'OK';
       }
+      return Promise.reject('获取用户信息失败');
     },
     async userLogout() {
       REMOVE_TOKEN();

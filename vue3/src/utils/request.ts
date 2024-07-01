@@ -11,7 +11,7 @@ const request = axios.create({
 request.interceptors.request.use(config => {
   // config 配置对象, headers 属性请求头, 经常给服务器端携带公共参数
   const userStore = useUserStore();
-  if (userStore.token) {
+  if (userStore.token && config.headers) {
     config.headers.token = userStore.token;
   }
   return config;
