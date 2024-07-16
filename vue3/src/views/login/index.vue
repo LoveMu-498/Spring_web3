@@ -6,7 +6,7 @@
   import { useRoute, useRouter } from 'vue-router';
   import { ElNotification, FormRules } from 'element-plus';
   import { getTime } from '@/utils/time.ts';
-  import type { loginForm } from '@/api/user/type.ts';
+  import type { loginFormData } from '@/api/user/type.ts';
 
   // 获取 el-form组件
   const loginForms = ref();
@@ -15,12 +15,13 @@
   const $route = useRoute();
   const useStore = useUserStore();
   const loading = ref(false);
+  // eslint-disable-next-line no-import-assign,no-redeclare
   const loginFormData = reactive({
     username: 'admin',
-    password: 'admin',
+    password: '111111',
   });
 
-  const rules = reactive<FormRules<loginForm>>({
+  const rules = reactive<FormRules<loginFormData>>({
     username: [
       { required: true, message: 'Please input username', trigger: 'blur' },
       { min: 5, max: 20, message: 'Username length should be 5 to 20', trigger: 'blur' },

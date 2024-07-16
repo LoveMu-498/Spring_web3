@@ -99,7 +99,6 @@
       left: $base-menu-width;
       top: $base-bar-height;
       padding: 20px;
-      background: gray;
       overflow: auto;
       transition: all 0.3s;
 

@@ -3,6 +3,7 @@
   import useUserStore from '@/store/modules/user.ts';
   import { useRoute, useRouter } from 'vue-router';
   import { nextTick } from 'vue';
+  import { ElMessage } from 'element-plus';
 
   const layoutSettingStore = useLayoutSettingStore();
   const userStore = useUserStore();
@@ -17,11 +18,13 @@
       document.exitFullscreen();
     }
   };
-  const logout = () => {
-    userStore.userLogout();
-    nextTick(() => {
+  const logout = async () => {
+    try {
+      await userStore.userLogout();
       $router.push({ path: '/login', query: { redirect: $route.path } });
-    });
+    } catch (e) {
+      ElMessage({ type: 'error', message: (e as Error).message });
+    }
   };
 </script>
 
