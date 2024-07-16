@@ -470,7 +470,7 @@
       skuInfo.skuDefaultImg = '';
       // eslint-disable-next-line no-param-reassign
       row.isDefault = false;
-      skuInfo.skuImageList.find(item => item.imgUrl === row.imgUrl).isDefault = false;
+      skuInfo.skuImageList.find(item => item.imgUrl === row.imgUrl)!.isDefault = false;
       // tableRowSelected(skuInfo.skuImageList, skuImg);
     } else {
       // 先全部置为 非默认
@@ -520,7 +520,7 @@
     flushSpuTable();
   };
 
-  const category3IdChanged = (id1, id2, id3) => {
+  const category3IdChanged = (id1: number, id2: number, id3: number) => {
     console.log(id1, id2, id3);
     spuInfo.category3Id = id3;
     skuInfo.category3Id = id3;
