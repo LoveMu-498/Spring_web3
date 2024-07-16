@@ -1,8 +1,14 @@
 import request from '@/utils/request.ts';
-import { ResponseData, SkuInfo, SkuResponseData } from '@/api/product/sku/type.ts';
+import {
+  ResponseData,
+  SkuInfo,
+  SkuListResponseData,
+  SkuResponseData,
+} from '@/api/product/sku/type.ts';
 
 enum API {
   SKU_LIST_URL = '/admin/product/list',
+  SKU_LIST_BYSPUID_URL = '/admin/product/findBySpuId',
   SKU_SAVE_URL = '/admin/product/saveSkuInfo',
   SPU_ATTR_LIST_URL = '/admin/product/spuSaleAttrList',
   SPU_IMG_LIST_URL = '/admin/product/spuImageList',
@@ -12,6 +18,9 @@ enum API {
 
 export const reqSkuInfoList = (pageNo: number, limit: number): Promise<SkuResponseData> =>
   request.get<any, SkuResponseData>(`${API.SKU_LIST_URL}/${pageNo}/${limit}`);
+
+export const reqSkuListBySpuId = (spuId: number): Promise<SkuListResponseData> =>
+  request.get<any, SkuListResponseData>(`${API.SKU_LIST_BYSPUID_URL}/${spuId}`);
 
 export const reqSaveSkuInfo = (skuInfo: SkuInfo): Promise<ResponseData> =>
   request.post<any, ResponseData>(API.SKU_SAVE_URL, skuInfo);

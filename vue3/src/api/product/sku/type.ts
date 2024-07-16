@@ -71,3 +71,7 @@ export interface SkuResponseData extends ResponseData {
     searchCount: boolean;
   };
 }
+
+export interface SkuListResponseData extends ResponseData {
+  data: SkuInfoList;
+}

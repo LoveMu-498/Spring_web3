@@ -6,7 +6,7 @@ export interface ResponseData {
 }
 
 export interface SpuImageType {
-  id: number;
+  id?: number;
   imgName: string;
   imgUrl: string;
   spuId: number;
@@ -15,7 +15,7 @@ export interface SpuImageType {
 export type SpuImageTypes = Array<SpuImageType>;
 
 export interface SpuPosterType {
-  id: number;
+  id?: number;
   imgName: string;
   imgUrl: string;
   spuId: number;
@@ -25,7 +25,7 @@ export type SpuPosterTypes = Array<SpuPosterType>;
 
 export interface SpuSaleAttrValue {
   baseSaleAttrId: number;
-  id: number;
+  id?: number;
   isChecked: boolean;
   saleAttrName: string;
   saleAttrValueName: string;
@@ -36,7 +36,7 @@ export type SpuSaleAttrValues = Array<SpuSaleAttrValue>;
 
 export interface SpuSaleAttr {
   baseSaleAttrId: number;
-  id: number;
+  id?: number;
   saleAttrName: string;
   spuId: number;
   newTagFlag?: boolean;
@@ -49,7 +49,7 @@ export type SpuSaleAttrs = Array<SpuSaleAttr>;
 export interface SpuInfo {
   category3Id: number;
   description: string;
-  id: number;
+  id?: number;
   spuImageList: SpuImageTypes;
   spuName: string;
   spuPosterList: SpuPosterTypes;

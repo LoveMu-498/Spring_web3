@@ -102,9 +102,9 @@
 <template>
   <div>
     <el-card class="category_card">
-      <el-form inline>
+      <el-form inline :disabled="isDisabled">
         <el-form-item label="一级分类">
-          <el-select v-model="category1Id" :disabled="isDisabled" @change="category1Changed">
+          <el-select v-model="category1Id" @change="category1Changed">
             <el-option
               v-for="category in category1Arr"
               :key="category.id"
@@ -114,7 +114,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="二级分类">
-          <el-select v-model="category2Id" :disabled="isDisabled" @change="category2Changed">
+          <el-select v-model="category2Id" @change="category2Changed">
             <el-option
               v-for="category in category2Arr"
               :key="category.id"
@@ -126,7 +126,6 @@
         <el-form-item label="三级分类">
           <el-select
             v-model="category3Id"
-            :disabled="isDisabled"
             @change="category3IdChanged(category1Id, category2Id, category3Id)"
           >
             <el-option

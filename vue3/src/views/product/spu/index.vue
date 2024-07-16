@@ -3,10 +3,8 @@
   import Pagination from '@/components/Pagination/index.vue';
   import { ref, reactive, onMounted, computed, nextTick } from 'vue';
   import {
-    BaseSaleAttr,
     BaseSaleAttrList,
     SpuImageType,
-    SpuImageTypes,
     SpuInfo,
     SpuInfoList,
     SpuResponseData,
@@ -29,9 +27,16 @@
     SkuImageType,
     SkuImageTypes,
     SkuInfo,
+    SkuInfoList,
+    SkuListResponseData,
     SkuSaleAttrValueType,
   } from '@/api/product/sku/type.ts';
-  import { reqSpuImageList, reqSpuSaleAttrList } from '@/api/product/sku/index.ts';
+  import {
+    reqSaveSkuInfo,
+    reqSkuListBySpuId,
+    reqSpuImageList,
+    reqSpuSaleAttrList,
+  } from '@/api/product/sku/index.ts';
   import { reqGetAttribute } from '@/api/product/attr/index.ts';
   import { AttributeTypes } from '@/api/product/attr/type.ts';
 
@@ -280,6 +285,7 @@
       )
     ) {
       attr.spuSaleAttrValueList.push({
+        id: undefined,
         baseSaleAttrId: attr.baseSaleAttrId,
         // isChecked: boolean,
         saleAttrName: attr.saleAttrName,
@@ -362,6 +368,21 @@
     skuAttrValueList: [],
     skuSaleAttrValueList: [],
   });
+  const validateSkuAttrValue = (rules: any, value: SkuAttrValueType, callback: any) => {
+    if (!value || !value?.valueId) {
+      return callback(new Error(`请选择${value ? value.attrName : '平台属性'}`));
+    }
+    return callback();
+  };
+  const validateSkuImageList = (rules: any, value: SkuImageTypes, callback: any) => {
+    if (!value || value.length === 0) {
+      return callback(new Error('至少选择一个图像'));
+    }
+    if (!value?.some(item => item.isDefault)) {
+      return callback(new Error('必须要有默认图像'));
+    }
+    return callback();
+  };
   const skuInfoRules = reactive({
     skuName: [
       { required: true, message: 'Please input skuName', trigger: 'blur' },
@@ -369,28 +390,49 @@
     ],
     price: [
       { required: true, message: 'Please input skuPrice', trigger: 'blur' },
-      { min: 0, message: 'price must be greater than 0', trigger: 'blur' },
+      { type: 'number', min: 0, message: 'price must be greater than 0', trigger: 'blur' },
     ],
     weight: [
       { required: true, message: 'Please input skuWeight', trigger: 'blur' },
-      { min: 0, message: 'weight must be greater than 0', trigger: 'blur' },
+      { type: 'number', min: 0, message: 'weight must be greater than 0', trigger: 'blur' },
     ],
     skuDesc: [
       { required: true, message: 'Please input skuDesc', trigger: 'blur' },
       { min: 2, max: 100, message: 'skuDesc should be 2 to 100', trigger: 'blur' },
     ],
+    skuImageList: [{ required: true, validator: validateSkuImageList, trigger: 'blur' }],
   });
   const skuInfoFormRef = ref<any>(null);
   const spuSaleAttrList = ref<SpuSaleAttrs>([]);
   const skuAllImageList = ref<SkuImageTypes>([]);
   const imgTableRef = ref<any>(null);
-  const attrList = ref<AttributeTypes>([]);
+  const skuAttrList = ref<AttributeTypes>([]);
+  const skuListVisible = ref<boolean>(false);
+  const skuList = ref<SkuInfoList>([]);
 
-  const getAttrList = async (id1, id2, id3) => {
+  const showSkuList = async (spuId: number) => {
+    try {
+      const result: SkuListResponseData = await reqSkuListBySpuId(spuId);
+      console.log(result);
+      if (result.code === 200) {
+        skuList.value = result.data;
+        skuListVisible.value = true;
+      }
+    } catch (e) {
+      console.log('showSkuList', e);
+      ElMessage.error('SKU列表获取失败');
+    }
+  };
+
+  const skuListDialogClosed = () => {
+    skuList.value = [];
+  };
+
+  const getAttrList = async (id1: number, id2: number, id3: number) => {
     try {
       const result = await reqGetAttribute(id1, id2, id3);
       if (result.code === 200) {
-        attrList.value = result.data;
+        skuAttrList.value = result.data;
       }
     } catch (e) {
       console.log('getAttrList', e);
@@ -405,6 +447,7 @@
     // skuInfo.category3Id // 在 category3Changed 函数中 设置
     try {
       const attrResult = await reqSpuSaleAttrList(skuInfo.spuId);
+      console.log('att', attrResult);
       if (attrResult.code === 200) {
         spuSaleAttrList.value = attrResult.data;
         // skuInfo.skuAttrValueList = spuSaleAttrList.value.map(item => ({
@@ -421,16 +464,24 @@
           imgName: spuImg.imgName,
           imgUrl: spuImg.imgUrl,
           isDefault: spuImg.imgUrl === skuInfo.skuDefaultImg,
-          skuId: skuInfo.skuId,
+          skuId: skuInfo.id,
           spuImgId: spuImg.id,
         }));
         // 考虑修改情况 ,已经有 defaultImg , 故一定要清空选项,然后选择url相同的一项 (注意 nextTick的应用)
-        const selectedImg = skuAllImageList.value.find(spuImg => spuImg.isDefault);
-        if (selectedImg) {
-          await nextTick();
-          imgTableRef.value.clearSelection();
-          await nextTick();
-          imgTableRef.value.toggleRowSelection(selectedImg, true);
+        // 事实上考虑修改 只需确保 两个 isDefault 对的, 剩余ref选择框 一起计算
+        if (skuInfo.skuImageList.length > 0) {
+          const selectionImages = skuAllImageList.value.filter(item =>
+            skuInfo.skuImageList.some(it => item.imgUrl === it.imgUrl)
+          );
+          console.log('selection', selectionImages);
+          if (selectionImages.length > 0) {
+            await nextTick();
+            imgTableRef.value.clearSelection();
+            await nextTick();
+            selectionImages.forEach(selectedImg =>
+              imgTableRef.value.toggleRowSelection(selectedImg, true)
+            );
+          }
         }
       }
     } catch (e) {
@@ -441,27 +492,13 @@
 
   // 默认 row参数为 skuAllImageList 中的元素, 注意其地址相同
   // rows  vue @select调用(测试证明有同一个对象row,地址相同)
-  const tableRowSelected = (rows: SkuImageTypes, row: SkuImageType) => {
-    console.log('select', rows, row);
-    // 已选选项还包含着点击选项, 故此操作为添加选项
-    // 因为时相同对象 所以可以直接使用 includes
-    if (rows.includes(row)) {
-      console.log('push');
-      skuInfo.skuImageList = JSON.parse(JSON.stringify(rows));
-    } else {
-      // 如果取消的选项为默认选项, 则先取消默认
-      if (row.isDefault) {
-        skuInfo.skuDefaultImg = '';
-        // 因为地址相同, 事实上也修改了 skuAllImageList中的 数据
-        // eslint-disable-next-line no-param-reassign
-        row.isDefault = false;
-      }
-      console.log('splice');
-      skuInfo.skuImageList.splice(
-        skuInfo.skuImageList.findIndex(skuImg => skuImg.imgUrl === row.imgUrl),
-        1
-      );
+  const tableRowSelected = (newSelection: SkuImageTypes) => {
+    const defaultSelection = skuAllImageList.value.find(item => item.isDefault);
+    if (defaultSelection && !newSelection.includes(defaultSelection)) {
+      defaultSelection.isDefault = false;
     }
+    skuInfo.skuImageList = JSON.parse(JSON.stringify(newSelection));
+    skuInfoFormRef.value.validateField('skuImageList');
   };
 
   const setDefault = (row: SkuImageType) => {
@@ -486,13 +523,19 @@
         // eslint-disable-next-line no-param-reassign
         item.isDefault = item.imgUrl === row.imgUrl;
       });
-      imgTableRef.value.toggleRowSelection(row, true);
+      // 但是 通过 ref 选择 会触发 selection-change 便不用主动触发
       // 通过 ref 选择 似乎不会触发 @select, 选择主动触发
-      // skuInfo不包含, 则rows包含row的 方式 调用 tableRowSelected ,以期望包含进去
-      if (!skuInfo.skuImageList.some(item => item.imgUrl === row.imgUrl)) {
-        tableRowSelected([...skuInfo.skuImageList, row], row);
-      }
+      imgTableRef.value.toggleRowSelection(row, true);
+      // // skuInfo不包含, 则rows包含row的 方式 调用 tableRowSelected ,以期望包含进去
+      // if (!skuInfo.skuImageList.some(item => item.imgUrl === row.imgUrl)) {
+      //   tableRowSelected([...skuInfo.skuImageList, row]);
+      // }
     }
+    skuInfoFormRef.value.validateField('skuImageList');
+  };
+
+  const tableRowClick = (row: SkuImageType) => {
+    imgTableRef.value.toggleRowSelection(row);
   };
 
   const cancelSkuInfo = () => {
@@ -514,10 +557,26 @@
     });
     spuSaleAttrList.value = [];
     skuAllImageList.value = [];
-    attrList.value = [];
     skuInfoFormRef.value.clearValidate();
     scene.value = 0;
     flushSpuTable();
+  };
+
+  const saveSkuInfo = async () => {
+    try {
+      await skuInfoFormRef.value.validate();
+      skuLoading.value = true;
+      const result = await reqSaveSkuInfo(skuInfo);
+      console.log(result);
+      if (result.code === 200) {
+        ElMessage.success(skuInfo.id ? 'sku修改成功' : 'sku保存成功');
+        cancelSkuInfo();
+      }
+    } catch (e) {
+      ElMessage.error(skuInfo.id ? 'sku修改失败' : 'sku保存失败');
+    } finally {
+      skuLoading.value = false;
+    }
   };
 
   const category3IdChanged = (id1: number, id2: number, id3: number) => {
@@ -545,12 +604,13 @@
         <el-table :data="spuList" border>
           <el-table-column type="index" align="center" label="序号"></el-table-column>
           <el-table-column label="SPU名称" prop="spuName"></el-table-column>
-          <el-table-column label="SPU描述" prop="description"> </el-table-column>
+          <el-table-column label="SPU描述" prop="description" show-overflow-tooltip>
+          </el-table-column>
           <el-table-column label="操作">
-            <template #default="{ row, $index }">
+            <template #default="{ row }">
               <el-button type="primary" size="small" icon="Plus" @click="addSku(row)" />
               <el-button type="warning" size="small" icon="Edit" @click="editSpuInfo(row.id)" />
-              <el-button type="info" size="small" icon="InfoFilled" />
+              <el-button type="info" size="small" icon="InfoFilled" @click="showSkuList(row.id)" />
 
               <el-popconfirm :title="`是否删除的${row.spuName}`" @confirm="removeSpu(row.id)">
                 <template #reference>
@@ -580,7 +640,7 @@
                 v-for="trademark in trademarkList"
                 :key="trademark.id"
                 :label="trademark.tmName"
-                :value="trademark.id"
+                :value="trademark.id!"
               />
             </el-select>
           </el-form-item>
@@ -679,73 +739,121 @@
       <div v-show="scene === 2" v-loading="skuLoading" class="sku_show">
         <el-form ref="skuInfoFormRef" :model="skuInfo" :rules="skuInfoRules">
           <el-form-item label="SKU名称" prop="skuName">
-            <el-input v-model="skuInfo.skuName" property="SKU名称" />
+            <el-input v-model="skuInfo.skuName" property="SKU名称" placeholder="请输入SKU名称" />
           </el-form-item>
           <el-form-item label="价格(元)" prop="price">
-            <el-input-number v-model.number="skuInfo.price" property="价格(元)" />
+            <el-input
+              v-model.number="skuInfo.price"
+              type="number"
+              property="价格(元)"
+              placeholder="请输入价格(元)"
+            />
           </el-form-item>
           <el-form-item label="重量(克)" prop="weight">
-            <el-input-number v-model.number="skuInfo.weight" property="重量(克)" />
+            <el-input
+              v-model.number="skuInfo.weight"
+              type="number"
+              property="重量(克)"
+              placeholder="请输入重量(克)"
+            />
           </el-form-item>
           <el-form-item label="SKU描述" prop="skuDesc">
-            <el-input v-model="skuInfo.skuDesc" type="textarea" property="SKU描述" />
+            <el-input
+              v-model="skuInfo.skuDesc"
+              type="textarea"
+              property="SKU描述"
+              placeholder="请输入SKU描述"
+            />
           </el-form-item>
           <el-form-item label="平台属性">
-            <el-form-item
-              v-for="(attr, index) in attrList"
-              :key="attr.id"
-              :label="attr.attrName"
-              style="flex: 1; margin-right: 10px"
-            >
-              <el-select v-model="skuInfo.skuAttrValueList[index]" value-key="valueId">
-                <el-option
-                  v-for="(attrValue, index) in attr.attrValueList"
-                  :key="attrValue.id"
-                  :label="attrValue.valueName"
-                  :value="{
-                    id: skuInfo.skuAttrValueList.find((item: SkuAttrValueType) => {
-                      item.valueId === attrValue.id;
-                    })?.id,
-                    attrId: attr.id,
-                    attrName: attr.attrName,
-                    skuId: skuInfo.id,
-                    valueId: attrValue.id,
-                    valueName: attrValue.valueName,
-                  }"
-                ></el-option>
-              </el-select>
-            </el-form-item>
+            <div style="display: flex; flex-wrap: wrap-reverse">
+              <el-form-item
+                v-for="(attr, index) in skuAttrList"
+                :key="attr.id"
+                :label="attr.attrName"
+                style="box-sizing: border-box; margin-bottom: 10px; flex: 1 0; min-width: 200px"
+                label-width="80px"
+                :prop="`skuAttrValueList.${index}`"
+                :rules="{ required: true, validator: validateSkuAttrValue, trigger: 'change' }"
+                :show-message="false"
+              >
+                <el-select
+                  v-model="skuInfo.skuAttrValueList[index]"
+                  :placeholder="`请选择${attr.attrName}`"
+                  value-key="valueId"
+                >
+                  <el-option
+                    v-for="attrValue in attr.attrValueList"
+                    :key="attrValue.id"
+                    :label="attrValue.valueName"
+                    :value="{
+                      id: skuInfo.skuAttrValueList.find((item: SkuAttrValueType) => {
+                        item?.valueId && item.valueId === attrValue.id;
+                      })?.id,
+                      attrId: attr.id,
+                      attrName: attr.attrName,
+                      skuId: skuInfo.id,
+                      valueId: attrValue.id,
+                      valueName: attrValue.valueName,
+                    }"
+                  ></el-option>
+                </el-select>
+                <!--              <template #error="{ error: string }"> </template>-->
+              </el-form-item>
+            </div>
           </el-form-item>
-          <el-form-item label="销售属性" prop="skuAttrValueList">
+          <el-form-item label="销售属性" prop="skuSaleAttrValueList">
             <el-form-item
               v-for="(attr, index) in spuSaleAttrList"
               :key="attr.id"
+              :inline-message="true"
               :label="attr.saleAttrName"
-              style="flex: 1; margin-right: 10px"
+              style="flex: 1 0 30%; margin-right: 10px"
+              :prop="`skuSaleAttrValueList.${index}`"
+              :rules="{
+                required: true,
+                validator: (rules: any, value: SkuSaleAttrValueType, callback: any) => {
+                  if (!value?.saleAttrValueId) {
+                    return callback(new Error(''));
+                  }
+                  return callback();
+                },
+                trigger: 'blur',
+              }"
+              :show-message="false"
             >
-              <el-select v-model="skuInfo.skuSaleAttrValueList[index]" value-key="valueId">
+              <el-select
+                v-model="skuInfo.skuSaleAttrValueList[index]"
+                value-key="saleAttrValueId"
+                :placeholder="`请选择对应${attr.saleAttrName}`"
+              >
                 <el-option
                   v-for="attrValue in attr.spuSaleAttrValueList"
                   :key="attrValue.id"
                   :label="attrValue.saleAttrValueName"
                   :value="{
+                    id: skuInfo.skuSaleAttrValueList.find(
+                      item => item.saleAttrValueId && item.saleAttrValueId === attrValue.id
+                    )?.id,
                     saleAttrValueId: attrValue.id,
                     saleAttrValueName: attrValue.saleAttrValueName,
-                    saleAttrId: attrValue.baseSaleAttrId,
+                    saleAttrId: attr.id,
                     saleAttrName: attrValue.saleAttrName,
                     skuId: skuInfo.id,
                     spuId: skuInfo.spuId,
                   }"
                 ></el-option>
-              </el-select> </el-form-item
-          ></el-form-item>
+              </el-select>
+            </el-form-item>
+          </el-form-item>
           <el-form-item label="图片名称" prop="skuImageList">
             <el-table
               ref="imgTableRef"
               :data="skuAllImageList"
               style="width: 100%"
               border
-              @select="tableRowSelected"
+              @selection-change="tableRowSelected"
+              @row-click="tableRowClick"
             >
               <el-table-column type="selection"></el-table-column>
               <el-table-column lable="图片">
@@ -756,18 +864,45 @@
               <el-table-column lable="名称" prop="imgName"></el-table-column>
               <el-table-column label="操作">
                 <template #default="{ row }">
-                  <el-button :type="row.isDefault ? 'success' : 'warning'" @click="setDefault(row)">
+                  <el-button
+                    :type="row.isDefault ? 'success' : 'warning'"
+                    @click.stop="setDefault(row)"
+                  >
                     设置默认</el-button
                   >
                 </template>
               </el-table-column>
             </el-table>
           </el-form-item>
-          <el-button type="primary"> 保存 </el-button>
+          <el-button type="primary" @click="saveSkuInfo"> 保存 </el-button>
           <el-button @click="cancelSkuInfo">取消</el-button>
         </el-form>
       </div>
     </el-card>
+    <el-dialog
+      v-model="skuListVisible"
+      title="SKU列表"
+      width="500"
+      align-center
+      @close="skuListDialogClosed"
+    >
+      <el-table :data="skuList" border>
+        <el-table-column label="SKU名字">
+          <template #default="{ row }">
+            <el-tooltip :content="row.skuDesc" placement="top">
+              {{ row.skuName }}
+            </el-tooltip>
+          </template>
+        </el-table-column>
+        <el-table-column label="SKU价格" prop="price"></el-table-column>
+        <el-table-column label="SKU重量" prop="weight"></el-table-column>
+        <el-table-column label="SKU图片">
+          <template #default="{ row }">
+            <img :src="row.skuDefaultImg" :alt="row.skuName" />
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
