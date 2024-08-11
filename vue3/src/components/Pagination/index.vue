@@ -1,10 +1,6 @@
 <script setup lang="ts">
-  import { reactive } from 'vue';
-
-  const Page = reactive({
-    pageNo: 1,
-    limit: 3,
-  });
+  const pageNo = defineModel('pageNo', { type: Number, default: 1 });
+  const limit = defineModel('limit', { type: Number, default: 3 });
 
   defineProps({
     total: {
@@ -13,20 +9,27 @@
     },
   });
 
-  const $emit = defineEmits(['change']);
+  const $emit = defineEmits<{
+    change: [currentPage: number, pageSize: number];
+  }>();
 </script>
 
 <template>
   <div>
     <el-pagination
-      v-model:current-page="Page.pageNo"
-      v-model:page-size="Page.limit"
+      v-model:current-page="pageNo"
+      v-model:page-size="limit"
       :pager-count="5"
       :page-sizes="[3, 5, 7, 9]"
       :background="true"
       layout="prev, pager, next, jumper, ->, sizes, total"
       :total="total"
-      @change="$emit('change', Page)"
+      v-bind="$attrs"
+      @change="
+        (currentPage: number, pageSize: number) => {
+          $emit('change', currentPage, pageSize);
+        }
+      "
     />
   </div>
 </template>

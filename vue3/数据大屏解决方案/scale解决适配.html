@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <style>
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    .container{
+        width:100vw;
+        height: 100vh;
+        background: url(./bg.png) no-repeat;
+        background-size: cover;
+    }
+    .box{
+        position: fixed;
+        width: 1920px;
+        height: 1080px;
+        background-color: red;
+        transform-origin: left top;
+        left: 50%;
+        top: 50%;
+    }
+    .top{
+        width: 100px;
+        height: 100px;
+        background-color: hotpink;
+    }
+    .bottom{
+        width: 100px;
+        height: 100px;
+        background-color: skyblue;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="box">
+      <div class="top">我是祖国的</div>
+      <div class="bottom">老花骨朵</div>
+    </div>
+  </div>
+</body>
+<script>
+  // 控制大屏放大与缩小
+  let box = document.querySelector('.box');
+
+  // 计算缩放大小
+  function getScale(w=1920, h=1080){
+    const ww = window.innerWidth / w;
+    const wh = window.innerHeight / h;
+    return ww < wh ? ww : wh;
+  }
+
+  box.style.transform = `scale(${getScale()}) translate(-50%,-50%)`
+
+  window.onresize = () => {
+    box.style.transform = `scale(${getScale()}) translate(-50%,-50%)`
+  }
+</script>
+</html>

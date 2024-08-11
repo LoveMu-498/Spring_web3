@@ -1,9 +1,4 @@
-export interface ResponseData {
-  code: number;
-  data: any;
-  message: string;
-  ok: boolean;
-}
+import { ResponseData } from '@/api/type.ts';
 
 export interface SkuImageType {
   id: number;

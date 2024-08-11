@@ -1,9 +1,4 @@
-export interface ResponseData {
-  code: number;
-  data: any;
-  message: string;
-  ok: boolean;
-}
+import { ResponseData } from '@/api/type.ts';
 
 // 已有品牌的数据类型
 export interface TradeMark {

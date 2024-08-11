@@ -2,7 +2,6 @@
   import { User, Lock } from '@element-plus/icons-vue';
   import { reactive, ref } from 'vue';
   import useUserStore from '@/store/modules/user.ts';
-  // eslint-disable-next-line import/no-extraneous-dependencies
   import { useRoute, useRouter } from 'vue-router';
   import { ElNotification, FormRules } from 'element-plus';
   import { getTime } from '@/utils/time.ts';
@@ -25,15 +24,6 @@
     username: [
       { required: true, message: 'Please input username', trigger: 'blur' },
       { min: 5, max: 20, message: 'Username length should be 5 to 20', trigger: 'blur' },
-      {
-        validator: (rule: any, value: any, callback: any) => {
-          if (value === 'lalala' || rule == null) {
-            callback(new Error("'lalala' is illegal account"));
-          }
-          callback();
-        },
-        trigger: 'change',
-      },
     ],
     password: [
       { required: true, message: 'Please input password', trigger: 'blur' },

@@ -2,6 +2,7 @@
 import request from '@/utils/request.ts';
 import type { loginFormData, loginResponseData, userInfoResponseData } from './type.ts';
 
+// eslint-disable-next-line no-shadow
 enum API {
   LOGIN_URL = '/admin/acl/index/login',
   USERINFO_URL = '/admin/acl/index/info',

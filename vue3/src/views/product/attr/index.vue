@@ -1,7 +1,5 @@
 <script setup lang="ts">
-  import { ref, reactive, nextTick, ComponentPublicInstance } from 'vue';
-  // eslint-disable-next-line import/no-extraneous-dependencies
-  import { cloneDeep } from 'lodash-es';
+  import { ref, reactive, nextTick } from 'vue';
   import Category from '@/components/Category/index.vue';
   import {
     reqGetAttribute,
@@ -23,7 +21,11 @@
   const loading = ref(false);
   const loadingText = ref<string>('');
   const btnDisabled = ref(true);
-  const tagTypes = ['primary', 'info', 'success'];
+  const tagTypes: Array<'primary' | 'success' | 'info' | 'warning' | 'danger'> = [
+    'primary',
+    'info',
+    'success',
+  ];
   const attribute = reactive<AttributeType>({
     id: undefined,
     attrName: '',
@@ -32,7 +34,7 @@
     attrValueList: [],
   });
   const addAttrFormRef = ref();
-  const rules = reactive<FormRules>({
+  const attributeRules = reactive<FormRules<AttributeType>>({
     attrName: [{ required: true, message: 'Please input attrName', trigger: 'blur' }],
   });
   let id1: number = 0;
@@ -53,7 +55,7 @@
   // };
 
   const updateAttr = (originAttr: AttributeType) => {
-    Object.assign(attribute, cloneDeep<AttributeType>(originAttr));
+    Object.assign(attribute, JSON.parse(JSON.stringify(originAttr)));
     // attribute.attrValueList = attribute.attrValueList.map((attr: AttributeValueType) => ({
     //   ...attr,
     //   flag: true,
@@ -65,13 +67,15 @@
   const cancel = () => {
     Object.assign(
       attribute,
-      cloneDeep<AttributeType>({
-        attrName: '',
-        categoryId: attribute.categoryId,
-        categoryLevel: attribute.categoryLevel,
-        attrValueList: [],
-        id: undefined,
-      })
+      JSON.parse(
+        JSON.stringify({
+          attrName: '',
+          categoryId: attribute.categoryId,
+          categoryLevel: attribute.categoryLevel,
+          attrValueList: [],
+          id: undefined,
+        })
+      )
     );
     // Object.assign(attribute, cloneDeep<AttributeType>(originAttr));
     console.log('attribute', attribute);
@@ -124,7 +128,7 @@
     attribute.attrValueList.splice(index, 1);
   };
 
-  const category3Changed = async (
+  const category3IdChanged = async (
     category1Id: number,
     category2Id: number,
     category3Id: number
@@ -164,7 +168,7 @@
   const removeAttr = async (id: number) => {
     try {
       loading.value = true;
-      loading.value = '删除中...';
+      loadingText.value = '删除中...';
       const result: ResponseData = await reqDeleteAttrByAttrId(id);
       if (result.code === 200) {
         ElMessage.success('删除成功');
@@ -216,16 +220,13 @@
 
 <template>
   <div>
-    <Category
-      :category3IdChanged="category3Changed"
-      :isDisabled="0 !== scene"
-      @clear-data="clearData()"
-    />
+    <Category :isDisabled="0 !== scene" @clear-data="clearData" @change="category3IdChanged" />
 
     <el-card v-loading="loading" :element-loading-text="loadingText">
       <!-- 展示属性 -->
       <div v-show="0 === scene" class="table_div">
         <el-button
+          v-has="'btn.Attr.add'"
           type="primary"
           size="default"
           icon="Plus"
@@ -259,12 +260,17 @@
           <el-table-column label="操作" width="120px">
             <template #default="{ row }">
               <el-button
+                v-has="'btn.Attr.update'"
                 type="primary"
                 size="small"
                 icon="Edit"
                 @click="updateAttr(row)"
               ></el-button>
-              <el-popconfirm :title="`是否删除的${row.attrName}属性`" @confirm="removeAttr(row.id)">
+              <el-popconfirm
+                v-has="'btn.Attr.remove'"
+                :title="`是否删除的${row.attrName}属性`"
+                @confirm="removeAttr(row.id)"
+              >
                 <template #reference>
                   <el-button type="primary" size="small" icon="Delete" />
                 </template>
@@ -275,7 +281,7 @@
       </div>
       <!-- 展示添加属性与修改数据的结构 -->
       <div v-show="1 === scene" class="form_div">
-        <el-form ref="addAttrFormRef" :model="attribute" :rules="rules" inline>
+        <el-form ref="addAttrFormRef" :model="attribute" :rules="attributeRules" inline>
           <el-form-item label="属性名称" prop="attrName">
             <el-input v-model="attribute.attrName" placeholder="请输入属性名称"></el-input>
           </el-form-item>

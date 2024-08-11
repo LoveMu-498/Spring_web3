@@ -3,6 +3,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import { constantRoute } from '@/router/routes.ts';
 // 创建路由器
+// eslint-disable-next-line import/no-mutable-exports
 const router = createRouter({
   // 路由模式 hash
   history: createWebHashHistory(),

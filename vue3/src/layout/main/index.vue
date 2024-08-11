@@ -3,6 +3,7 @@
   import useLayoutSettingStore from '@/store/modules/setting.ts';
 
   const layoutStore = useLayoutSettingStore();
+  const flag = ref(true);
   watch(
     () => layoutStore.refresh,
     () => {
@@ -12,7 +13,6 @@
       });
     }
   );
-  const flag = ref(true);
 </script>
 
 <template>

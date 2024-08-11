@@ -1,7 +1,10 @@
 // 对外暴露配置路由(常量路由)
 
-// eslint-disable-next-line import/prefer-default-export
-export const constantRoute = [
+import { RouteRecordRaw } from 'vue-router';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import cloneDeep from 'lodash/cloneDeep';
+
+export const constantRoute: Array<RouteRecordRaw> = [
   {
     path: '/login',
     component: () => import('@/views/login/index.vue'),
@@ -63,6 +66,9 @@ export const constantRoute = [
       icon: 'Histogram',
     },
   },
+];
+
+export const asyncRoute: Array<RouteRecordRaw> = [
   {
     path: '/acl',
     component: () => import('@/layout/index.vue'),
@@ -163,16 +169,33 @@ export const constantRoute = [
       },
     ],
   },
-  {
-    // 任意路由
-    path: '/:pathMatch(.*)*',
-    redirect: '/404',
-    name: 'Any',
-    meta: {
-      // 菜单标题
-      title: '任意',
-      hidden: true,
-      icon: 'DataLine',
-    },
-  },
 ];
+
+export const anyRoute: RouteRecordRaw = {
+  // 任意路由
+  path: '/:pathMatch(.*)*',
+  redirect: '/404',
+  name: 'Any',
+  meta: {
+    // 菜单标题
+    title: '任意',
+    hidden: true,
+    icon: 'DataLine',
+  },
+};
+
+const myFunc = (asyncRoutes: Array<RouteRecordRaw>, routes: Array<string>): Array<RouteRecordRaw> =>
+  asyncRoutes.filter(route => {
+    if (routes.includes(route.name as string)) {
+      if (route.children && route.children.length > 0) {
+        // eslint-disable-next-line no-param-reassign
+        route.children = myFunc(route.children, routes);
+      }
+      return true;
+    }
+    return false;
+  });
+
+export const filterAsyncRoute = (routes: Array<string>): Array<RouteRecordRaw> => {
+  return myFunc(cloneDeep(asyncRoute), routes);
+};

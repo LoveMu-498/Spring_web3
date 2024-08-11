@@ -12,19 +12,19 @@
     TradeMark,
     TradeMarkResponseData,
   } from '@/api/product/trademark/type.ts';
-  import { ElMessage, UploadProps } from 'element-plus';
+  import { ElMessage, ElUpload, UploadProps } from 'element-plus';
   import { UploadResponseData } from '@/api/product/upload/type.ts';
   import Pagination from '@/components/Pagination/index.vue';
 
-  let pageNo = 1;
-  let limit = 3;
+  const pageNo = ref<number>(1);
+  const limit = ref<number>(3);
   const total = ref<number>(0);
   const trademarkArr = ref<TradeMarkList>([]);
   const dialogFormVisible = ref(false);
   const dialogTitle = ref<string>('');
   const uploading = ref<boolean>(false);
   const uploadText = ref<string>('');
-  const uploadRef = ref<any>(null);
+  const uploadRef = ref<InstanceType<typeof ElUpload> | null>(null);
   const trademarkFormRef = ref<any>(null);
   const trademarkParams: Reactive<TradeMark> = reactive({
     tmName: '',
@@ -49,7 +49,7 @@
 
   // 获取已有品牌接口封装函数
   const getHasTrademark = async () => {
-    const result: TradeMarkResponseData = await reqHasTrademark(pageNo, limit);
+    const result: TradeMarkResponseData = await reqHasTrademark(pageNo.value, limit.value);
     if (result.code === 200) {
       total.value = result.data.total;
       trademarkArr.value = result.data.records;
@@ -57,9 +57,7 @@
     console.log(result);
   };
 
-  const updatePage = (page: any) => {
-    pageNo = page.pageNo;
-    limit = page.limit;
+  const updatePage = () => {
     getHasTrademark();
   };
 
@@ -130,9 +128,12 @@
     uploadText.value = '';
   }
   // 阻止并取消上传文件
+  // TODO 没验证这块是否取消或阻止 也没弄明白abort的方式
+  // 阻止abort方法需要一个 UploadFile类型的参数, 暂时没弄明白, 所以选择清空文件列表
   const abortUpload = () => {
-    if (uploadRef.value && uploading.value) {
-      uploadRef.value.abort();
+    if (uploadRef.value) {
+      uploadRef.value!.clearFiles();
+      // uploadRef.value!.abort();
       hideFakeLoading();
     }
   };
@@ -222,7 +223,12 @@
       <!--        :total="total"-->
       <!--        @change="getHasTrademark()"-->
       <!--      />-->
-      <Pagination :total="total" @change="updatePage" />
+      <Pagination
+        v-model:page-no="pageNo"
+        v-model:limit="limit"
+        :total="total"
+        @change="updatePage"
+      />
     </el-card>
     <!-- title: 设置对话框左上角标题-->
     <el-dialog v-model="dialogFormVisible" :title="dialogTitle" width="500" draggable>

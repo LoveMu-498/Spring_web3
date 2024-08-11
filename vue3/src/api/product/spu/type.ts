@@ -1,24 +1,20 @@
-export interface ResponseData {
-  code: number;
-  data: any;
-  message: string;
-  ok: boolean;
-}
+import { UploadUserFile } from 'element-plus';
+import { ResponseData } from '@/api/type.ts';
 
 export interface SpuImageType {
   id?: number;
   imgName: string;
   imgUrl: string;
-  spuId: number;
+  spuId?: number;
 }
 
-export type SpuImageTypes = Array<SpuImageType>;
+export type SpuImageTypes = Array<SpuImageType & Partial<UploadUserFile>>;
 
 export interface SpuPosterType {
   id?: number;
   imgName: string;
   imgUrl: string;
-  spuId: number;
+  spuId?: number;
 }
 
 export type SpuPosterTypes = Array<SpuPosterType>;
@@ -26,10 +22,10 @@ export type SpuPosterTypes = Array<SpuPosterType>;
 export interface SpuSaleAttrValue {
   baseSaleAttrId: number;
   id?: number;
-  isChecked: boolean;
+  isChecked?: boolean;
   saleAttrName: string;
   saleAttrValueName: string;
-  spuId: number;
+  spuId?: number;
 }
 
 export type SpuSaleAttrValues = Array<SpuSaleAttrValue>;
@@ -38,7 +34,7 @@ export interface SpuSaleAttr {
   baseSaleAttrId: number;
   id?: number;
   saleAttrName: string;
-  spuId: number;
+  spuId?: number;
   newTagFlag?: boolean;
   newTagValue?: string;
   spuSaleAttrValueList: SpuSaleAttrValues;

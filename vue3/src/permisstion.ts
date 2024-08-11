@@ -8,7 +8,7 @@ import setting from '@/setting.ts';
 
 const userStore = useUserStore(pinia);
 nProgress.configure({ showSpinner: false });
-// 全局首位: 项目当中任意路由切换都会触发的枸杞
+// 全局首位: 项目当中任意路由切换都会触发的钩子
 // 全局前置守卫
 router.beforeEach(async (to: any, from: any, next: any) => {
   // console.log('before', to, from);
@@ -20,7 +20,7 @@ router.beforeEach(async (to: any, from: any, next: any) => {
     } else if (!username || !avatar) {
       try {
         await userStore.userInfo();
-        next();
+        next({ ...to });
       } catch (e) {
         await userStore.userLogout();
         next({ path: '/login', query: { redirect: to.path } });

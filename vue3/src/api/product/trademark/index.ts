@@ -1,5 +1,6 @@
 import request from '@/utils/request.ts';
-import { ResponseData, TradeMark, TradeMarkResponseData } from '@/api/product/trademark/type.ts';
+import { TradeMark, TradeMarkResponseData } from '@/api/product/trademark/type.ts';
+import { ResponseData } from '@/api/type.ts';
 
 // eslint-disable-next-line no-shadow
 enum API {

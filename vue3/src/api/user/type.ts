@@ -1,14 +1,9 @@
+import { ResponseData } from '@/api/type.ts';
+
 // 定义用户相关数据的ts类型
 export interface loginFormData {
   username: string;
   password: string;
-}
-
-// 定义全部接口返回数据都拥有的ts类型
-interface ResponseData {
-  code: number;
-  message: string;
-  ok: boolean;
 }
 
 export interface loginResponseData extends ResponseData {
@@ -18,7 +13,8 @@ export interface loginResponseData extends ResponseData {
 export interface userInfoResponseData extends ResponseData {
   data: {
     buttons: string[];
-    rules: string[];
+    roles: string[];
+    routes: string[];
     name: string;
     avatar: string;
   };

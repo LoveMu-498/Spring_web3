@@ -5,6 +5,7 @@ import 'element-plus/dist/index.css';
 // @ts-expect-error忽略当前文件ts类型的检测否则有红色提示(打包会失败)
 // eslint-disable-next-line import/extensions
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs';
+import 'element-plus/theme-chalk/dark/css-vars.css';
 // eslint-disable-next-line import/no-unresolved
 import 'virtual:svg-icons-register';
 // eslint-disable-next-line import/extensions
@@ -13,6 +14,7 @@ import '@/styles/index.scss';
 import router from '@/router/index.ts';
 import pinia from '@/store/index.ts';
 import '@/permisstion.ts';
+import { hasButton } from '@/directive/has.ts';
 // 引入路由鉴权文件
 
 const app = createApp(App);
@@ -29,4 +31,7 @@ app.use(components);
 // 注册模版路由
 app.use(router);
 app.use(pinia);
+
+hasButton(app);
+
 app.mount('#app');

@@ -1,6 +1,7 @@
 import request from '@/utils/request.ts';
-import { ResponseData, TradeMarkListResponseData } from '@/api/product/trademark/type.ts';
+import { TradeMarkListResponseData } from '@/api/product/trademark/type.ts';
 
+// eslint-disable-next-line no-shadow
 enum API {
   TRADEMARK_CURRENT_LIST_URL = '/admin/product/baseCategoryTrademark/findCurrentTrademarkList',
   TRADEMARK_LIST_URL = '/admin/product/baseCategoryTrademark/findTrademarkList',

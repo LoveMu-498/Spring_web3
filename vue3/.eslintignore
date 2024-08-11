@@ -9,4 +9,4 @@ html
 .vscode
 .idea
 *.sh
-*.md
+*.md/files/

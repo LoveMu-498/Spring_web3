@@ -6,8 +6,8 @@ import {
   Category2ResponseData,
   Category3ResponseData,
   Category3Types,
-  ResponseData,
 } from '@/api/product/attr/type.ts';
+import { ResponseData } from '@/api/type.ts';
 
 // eslint-disable-next-line no-shadow
 enum API {

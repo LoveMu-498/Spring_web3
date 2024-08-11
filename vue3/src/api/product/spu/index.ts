@@ -1,13 +1,12 @@
 import request from '@/utils/request.ts';
 import {
   BaseSaleAttrResponseData,
-  ResponseData,
   SpuInfo,
   SpuInfoListResponseData,
   SpuInfoResponseData,
   SpuResponseData,
 } from '@/api/product/spu/type.ts';
-import * as querystring from 'node:querystring';
+import { ResponseData } from '@/api/type.ts';
 
 // eslint-disable-next-line no-shadow
 enum API {
@@ -25,10 +24,7 @@ export const reqGetSpuList = (
   limit: number,
   spuInfo: SpuInfo
 ): Promise<SpuResponseData> => {
-  console.log(new URLSearchParams(spuInfo).toString());
-  return request.get<any, SpuResponseData>(
-    `${API.SPU_URL}/${page}/${limit}?${new URLSearchParams(spuInfo).toString()}`
-  );
+  return request.get<any, SpuResponseData>(`${API.SPU_URL}/${page}/${limit}`, { params: spuInfo });
 };
 
 export const reqGetSpuInfo = (spuId: number): Promise<SpuInfoResponseData> =>

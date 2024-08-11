@@ -5,6 +5,7 @@ import type { RouteRecordRaw } from 'vue-router';
 export interface UserState {
   token: string | null;
   menuRoutes: Array<RouteRecordRaw>;
+  buttons: Array<string>;
   username: string;
   avatar: string;
 }

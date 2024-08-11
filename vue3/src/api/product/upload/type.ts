@@ -1,6 +1,5 @@
-export interface UploadResponseData {
-  code: number;
+import { ResponseData } from '@/api/type.ts';
+
+export interface UploadResponseData extends ResponseData {
   data: string;
-  message: string;
-  ok: boolean;
 }
